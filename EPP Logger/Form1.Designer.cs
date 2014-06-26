@@ -88,6 +88,7 @@
             this.OutputText_Box.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.OutputText_Box.Size = new System.Drawing.Size(530, 464);
             this.OutputText_Box.TabIndex = 2;
+            
             // 
             // updateProgressBar
             // 
