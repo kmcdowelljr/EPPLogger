@@ -92,6 +92,19 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Pytool\epp\epp04.pyc" />
+    <None Include="Pytool\epp\epp10.pyc" />
+    <None Include="Pytool\epp\__init__.pyc" />
+    <None Include="Pytool\epp\__pycache__\CVS\Entries" />
+    <None Include="Pytool\epp\__pycache__\CVS\Repository" />
+    <None Include="Pytool\epp\__pycache__\CVS\Root" />
+    <None Include="Pytool\epp\__pycache__\epp04.cpython-32.pyc" />
+    <None Include="Pytool\epp\__pycache__\EPP043.cpython-32.pyc" />
+    <None Include="Pytool\epp\__pycache__\epp10.cpython-32.pyc" />
+    <None Include="Pytool\epp\__pycache__\EPP103.cpython-32.pyc" />
+    <None Include="Pytool\epp\__pycache__\EPPinternal.cpython-32.pyc" />
+    <None Include="Pytool\epp\__pycache__\__init__.cpython-32.pyc" />
+    <None Include="Pytool\README" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -115,6 +128,16 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Pytool\epp\.epp10-backup.py" />
+    <Content Include="Pytool\epp\epp04.py" />
+    <Content Include="Pytool\epp\epp10.py" />
+    <Content Include="Pytool\epp\__init__.py" />
+    <Content Include="Pytool\pytool-gimped.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,426 @@
+Background
+
+PyTool is the working name of an argument parser with optimization built in. Once all functions have been tested, features have been added, etc, I will likely rename it and move this page. PyTool in essence is a self contained EPP client frontend.
+
+To start, two new EPP python modules that were built from scratch to RFC spec. One for EPP 1.0, and one for EPP .04. Why? To better incorporate the ability to run custom and or length commands without having to use shell scripting and pipes. They are written in Python 3.2.3, the latest current version, and are portable across any machine with Python 3 installed.
+
+    Note, if compiling Python 3 from source, you MUST compile with SSL as it doesn't include this by default. However, all packaged versions(.deb, .rpm, .tgz) normally do so are OK. 
+
+The design of these modules is completely different than the current toolkits offered. They are completely self contained, and each contains only one class. That is, each class instance contains the transport socket, the xml generators, and a few helper methods. For example, if you create an instance as 'x = EPP10.EPP10()', you then send a command by doing 'x.sendreceive(x.domain_info('neustar.biz'))'. This is by design, as it also allows for only the xml alone to be extracted by doing 'xml = x.domain_info('neustar.biz'), which will set variable xml to the full xml that would be sent. This is helpful for when you want to see what correct xml should look like when tracking down bugs.
+
+By default, the xml generated is not spaced..mainly for speed reasons. There is helper method 'pretty' that does this. So really, it's probably best to use 'xml = x.pretty(x.domain_info('neustar.biz')). You could even do 'x.sendreceive(x.pretty(x.domain_info('neustar.biz')))', although I see no value in this.
+
+These were created only as modules, and meant to be used in 'frontend'. One such frontend is a creation I named 'pytool'.
+
+
+========
+
+Purpose
+
+PyTool itself is meant primarily for internal use. It is designed to be much more flexible than our existing tools, and can be very easily changed with no need for recompilation. I'll try to show some examples below.
+
+Like Perl, Python is an interpreted language, meaning it's run from source. However, one can write python modules in pure C, compile them, and they will run at C speed. This is only useful really when cpu speed is the bottleneck, which is rarely(and not at all in this tool).
+[edit] About Syntax
+
+You'll notice yourself using a lot of underscores when running commands. PEP 8 style guide recommends the use of _ over camelCase, but only where it helps readability. I've tried to stick with this convention, although the modules themselves currently violate a few of the rules(line length, mainly).
+
+========
+
+Using The Tool
+
+The tool source is located at /home/regysupp/pytool/, and is named pytool.py.
+
+However, this has been symlinked to /usr/bin/pytool, so you can invoke it from any folder using command: pytool <arguments>
+
+
+PyTool does not care where arguments go. So, the three below commands are all identical -
+
+pytool 1000 domain_info domain_name=neustar.biz biz ote
+
+pytool domain_info biz domain_name=neustar.biz ote 1000
+
+pytool ote biz domain_info domain_name=neustar.biz 1000
+
+One thing to note, you MUST always specify the tld and environment as I have above.
+
+
+The output to the screen by default is 'starting' when starting, 'stopping' when done, and then the total elapsed time to complete in seconds.
+
+========
+
+Spacing
+
+For items that require spaces, such as contact names, address, etc, enclose the phrase in quotes.
+
+For example, you could do -
+
+pytool contact_create contact_id=abc123 name='John Doe'
+
+The above is an incomplete command and used only for example.
+
+========
+
+Login
+
+The tool automatically logs in as neulevelcsr neulevel, and logs out when finished. If you'd rather login as a user, just specify username and password arguments. For example,
+
+pytool username=abcdef password=123456 domain_create domain_name=test.biz biz ote
+Repetition
+
+As used in the example above, putting a number in your arguments will run the command that many times. Probably only useful for speed testing. By default, each command runs 1 time.
+
+========
+
+Multiple Items
+
+In the variables to set below, you'll see that many variables can take lists(such as status, address, contactids, etc if adding multiple). Since lists aren't natively supported via command line, you must use a pipe(|) to seperate multiples. Keep in mind that linux will read a pipe as an actual pipe, so you need to escape it. For example, if you wanted to add two statuses to neustar.biz, you'd do -
+
+pytool domain_update domain_name=neustar.biz add_status=serverTransferProhibited\|serverUpdateProhibited biz ote
+
+Alternatively, you can just enclose in quotes such as - pytool domain_update domain_name=neustar.biz add_status='serverTransferProhibited|serverUpdateProhibited' biz ote
+
+========
+
+Lists
+
+One new feature is that PyTool supports lists of objects with no extra action needed. So, let's say you have 1000 domains that you want to info. You put those domains(newline separated) in a textfile of any name(in this example, domains.txt). Just put the filename as the object that's iterating(domain in this example) -
+
+pytool domain_info domain_name=domains.txt biz ote
+
+This will also work contacts and hosts.
+
+As one of the few very specific items about the tool, it supports transfers in this manner as well. However, the text file MUST be in format 'domain|authinfo'. Spacing isn't important, so it can be 'domain | authinfo' if you'd rather. So imagine file 'domainstotransfer.txt' that contains -
+
+neustar.biz | abc123
+
+hello.biz|xyz123
+
+You can transfer these(or an entire list of course) like - pytool domain_transfer domain_name=domainstotransfer.txt op=request biz ote
+
+========
+
+Synchronous vs Asynchronous
+
+Pytool uses nonblocking sockets and select for maximum speed by default. However, there may be cases where you don't want this or else this causes issues. The only case I've found so far where this causes issues is in removing hosts from a domain - if you do so too fast, it causes errors. Another concern is perhaps you want to capture send/receives in order.
+
+To send one at a time, using blocking sockets, just add the argument 'synchronous' anywhere in your command.
+
+========
+
+Output
+
+Output can be manually set with output=<filename> to write to file, or output=screen to print.
+
+By default -
+
+Single commands print to screen
+
+Commands with a number of times to iterate write to - <action>-mmddyy-hhmmss.out
+
+Commands where a file is specified as an item get written to - <file>.<action>.out
+
+Commands where an xml file is sent using send_file are written to - <file>.out
+
+========
+
+TLDs
+
+biz
+
+us
+
+tel
+
+travel
+
+co
+
+cn
+
+cnidn
+
+tw
+
+gsma
+
+iq
+
+========
+
+Environments
+
+prod
+
+ote
+
+local(should only be used for cn, cnidn, and tw)
+
+remote(should only be used for cn, cnidn, and tw)
+
+========
+
+Domain Operations
+
+domain_create - Creates domain
+
+    domain_name - string - domain name
+    term - optional string or int - 1 if not specified
+    ns - optional string, | delimited string, list, or tuple - nameservers
+    registrant - string - registrant contact id
+    admin - string, | delimited string, list, or tuple - up to two contact IDs for admin
+    tech - same as admin
+    billing - same as admin
+    pw - string - domain authinfo/pw
+    unspec - optional string, | delimited string, list, or tuple - unspec commands
+    nvtup - optional string, | delimited string, list, or tuple - used for domain lock service only
+    ds_record - optional string, | delimited string, or list of tuples - ds records like - MUST BE USED like - ds_record=keytag,alg,digtype,digest 
+
+
+domain_check - Checks if domain is available
+
+    domain_name - string, | delimited string, list, or tuple - domain(s) to check 
+
+
+
+domain_info - Returns info of domain
+
+    domain_name - string - domain to info 
+
+
+
+domain_transfer - transfer domain
+
+    domain_name - string - domain name
+    op - string - must be request,query, or cancel
+    pw - optional string - only required for new request
+    term - optional int or string - default is 1. Only used for new requests.
+    unspec - optional string, | delimited string, list, or tuple - unspec commands 
+
+
+
+domain_update - updates a domain
+
+    domain_name - string - domain to update
+    add_ns - optional string, | delimited string, list, or tuple - nameserver(s) to add
+    remove_ns - optional string, | delimited string, list, or tuple - nameserver(s) to remove
+    set_ns - optional string, | delimited string, list, or tuple - nameserver(s) to set - this removes any previous ns entries and adds those listed
+        Note - to remove all NS, use set_ns=null 
+    add_admin - optional string, | delimited string, list, or tuple - admin contact id(s) to add
+    remove_admin - optional string, | delimited string, list, or tuple - admin contact id(s) to remove
+    set_admin - optional string, | delimited string, list, or tuple - admin contact id(s) to set - this removes any previous entries and adds those listed
+    add_tech - optional string, | delimited string, list, or tuple - tech contact id(s) to add
+    remove_tech - optional string, | delimited string, list, or tuple - tech contact id(s) to remove
+    set_tech - optional string, | delimited string, list, or tuple - tech contact id(s) to set - this removes any previous entries and adds those listed
+    add_billing - optional string, | delimited string, list, or tuple - billing contact id(s) to add
+    remove_billing - optional string, | delimited string, list, or tuple - billing contact id(s) to remove
+    set_billing - optional string, | delimited string, list, or tuple - billing contact id(s) to set - this removes any previous entries and adds those listed
+    pw - optional string - new password
+    add_status - optional string, | delimited string, list, or tuple - statuses to add
+    remove_status - optional string, | delimited string, list, or tuple - statuses to remove
+    unspec - optional string, | delimited string, list, or tuple - unspec
+    nvtup - optional string, | delimited string, list, or tuple - same as unspec
+    add_ds_record - optional string, | delimited string, list of tuples - MUST BE USED as dnssecadd=keytag,alg,digesttype,digest and pipe seperated if multiples
+    remove_ds_record - optional string, | delimited string, list, or tuple - keytags to remove 
+
+
+
+domain_delete - deletes a domain
+
+    domain_name - string - domain to delete 
+
+
+
+domain_renew - Renews a domain
+
+    domain_name - string - domain to renew
+    exp_date - string - expiration date of domain in mm-dd-yyyy format
+    term - optional int or string - defaults to 1
+    unspec - optional string, | delimited string, list, or tuple - unspec commands 
+
+
+
+domain_restore - Restores deleted domain
+
+    domain - string - domain name
+    exp_date - string - expiration date of domain in mm-dd-yyyy format
+    restore_reason_code - string or int - restore reason code
+    restore_comment - string - restore comment
+    term - optional int or string - term for which to renew domain 
+
+========
+
+Contact Operations
+
+contact_create - creates contact
+
+    contact_id - string - contactid
+    name - string - name
+    org - optional string - organization
+    street - string, | delimited string, tuple, or list - street adress(up to 3 items)
+    city - string - city
+    state - optional string - state
+    postal - optional int or string - postal/zip code
+    country_code - string - country code
+    voice - string - telephone number in format '+1.5555555555'. Add 'x123' for extension 123.
+    fax - optional string - same as voice
+    email - string - email address
+    pw - string - authinfo/password
+    unspec - optional string, pipe delimited string, tuple, or list - any unspec commands. ('xx=yy','aa=bb')
+    intl_name - optional string - international name
+    intl_org - optional string - international org
+    intl_street - optional string - international street
+    intl_city - optional string - international city
+    intl_state - optional string - international state
+    intl_postal - optional string - international postal
+    intl_country_code - optional string - international country code 
+
+
+contact_check - checks if contact is available.
+
+    contact_id - string - contact id 
+
+
+contact_info - gets info of contact
+
+    contact_id - string - contact id 
+
+
+contact_transfer - performs transfer command
+
+    contact_id - string - contact id
+    op - string - must be 'request', 'query', or 'cancel'
+    pw - optional string - should only be supplied with 'request' requesttype
+    unspec - optional string, pipe delimited string, tuple, or list - unspec commands 
+
+
+contact_update - Updates a contact_id. 
+
+All fields optional except contact_id. Any field used will be updated. Field types are same as contactcreate, with addition of 'addstatus' and 'removestatus'.
+
+    add_status - optional string, | delimited string, list, or tuple - status(es) to add
+    remove_status - same - status(es) to remove 
+
+
+contact_delete - deletes contact
+
+    contact_id - string - contact 
+
+========
+
+Host Operations
+
+host_create - Create nameserver/host
+
+    hostname - string - hostname of server
+    ip - optional string, | delimited string, list, or tuple - ip address(es) ONLY if server is inzone
+    unspec - optional string, | delimited string, list, or tuple - unspec commands 
+
+
+
+host_update - update host
+
+    hostname - string - hostname
+    add_ip - optional string, | delimited string, list, or tuple - ip(s) to add
+    remove_ip - optional string, | delimited string, list, or tuple - ip(s) to remove
+    new_hostname - optional string - using this value RENAMES the host...
+    add_status - optional string, | delimited string, list, or tuple - status to add
+    remove_status - optional string, | delimited string, list, or tuple - status to remove
+    unspec - optional string, | delimited string, list, or tuple - unspec commands 
+
+
+host_delete - deletes a host
+
+    hostname - string - hostname 
+
+
+
+host_check - checks if host is available
+
+    hostname - string - hostname 
+
+
+host_info - infos a host
+
+    hostname - string - hostname 
+
+========
+
+Misc Operations
+
+hello - sends hello command
+
+poll - sends poll command
+
+    op - string - req, ack - operation to do
+    msg_id - optional string, int - msgID if acking 
+
+
+send_file - sends contents of file, assumed to be properly formed xml.
+
+    file_name - string - relative or full path to file 
+
+========
+
+XML options
+
+There are two other arguments you can use with your pytool command.
+
+    show_sent_xml - adds the written xml to the output buffer, rather than just the server replies 
+
+    print_xml_only - Only prints to screen the 'prettified' xml of the command
+        print_xml_only cannot be used with the 'set_' options of domain_update, because print_xml_only does not establish a connection 
+
+This is useful for generating xml for a customer without sending anything to the server.
+
+
+regysupp@strecprvstg1 pytool > pytool print_xml_only domain_create do
+main_name=alibaldfsdfsdf.biz registrant=abcd admin=abcd tech=abcd billing=abcd unspec=Dosomething=y
+es biz ote
+<?xml version="1.0" encoding="UTF-8"?>
+ <epp xmlns="urn:ietf:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:sche
+maLocation="urn:ietf:xml:ns:epp-1.0 epp-1.0.xsd">
+  <command>
+   <create>
+    <domain:create xmlns="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml
+:ns:domain-1.0 domain-1.0.xsd">
+     <name>alibaldfsdfsdf.biz</name>
+     <period unit="y">1</period>
+     <registrant>abcd</registrant>
+     <contact type="admin">abcd</contact>
+     <contact type="tech">abcd</contact>
+     <contact type="billing">abcd</contact>
+     <authInfo>
+      <pw />
+     </authInfo>
+    </domain:create>
+   </create>
+   <extension>
+    <neulevel:extension xmlns="urn:ietf:params:xml:ns:neulevel-1.0" xsi:schemaLocation="urn:ietf:par
+ams:xml:ns:neulevel-1.0 neulevel-1.0.xsd">
+     <unspec>Dosomething=yes</unspec>
+    </neulevel:extension>
+   </extension>
+   <clTRID>20120621-204128-3BI-1</clTRID>
+  </command>
+ </epp>
+
+========
+
+Examples
+
+Add serverTransferProhibited to neustar.biz pytool domain_update domain_name=neustar.biz add_status=serverTransferProhibited biz ote
+
+
+Delete neustar.biz pytool domain_delete domain_name=neustar.biz biz ote
+
+
+Check neustar.biz and hello.biz pytool domain_check domain_name=neustar.biz\|hello.biz biz ote
+
+
+Bulk move list domains.biz.txt pytool domain_transfer domain_name=domains.biz.txt op=request unspec=TransferCSRMove=Yes\|ActingRegistrar=GAININGREGISTRAR
+
+
+Add two DS records to domain pytool domain_update domain_name=aasdnssectest.biz add_ds_record=60485,5,1,2BB183AF5F22588179A53B0A98631FAD1A292118\|60486,5,1,2BB183AF5F22588179A53B0A98631FAD1A292118 biz ote output=screen
+
+
+Remove these two DS records pytool domain_update domain_name=aasdnssectest.biz remove_ds_record=60485\|60486 biz ote output=screen 
