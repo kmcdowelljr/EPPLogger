@@ -35,13 +35,15 @@
             this.InputBox = new System.Windows.Forms.TextBox();
             this.OutputText_Box = new System.Windows.Forms.TextBox();
             this.updateProgressBar = new System.Windows.Forms.ProgressBar();
+            this.pythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MainWindow_fileToolStripMenuItem});
+            this.MainWindow_fileToolStripMenuItem,
+            this.pythonToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1325, 24);
@@ -60,14 +62,14 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.exitToolStripMenuItem.Text = "&Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -88,7 +90,6 @@
             this.OutputText_Box.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.OutputText_Box.Size = new System.Drawing.Size(530, 464);
             this.OutputText_Box.TabIndex = 2;
-            
             // 
             // updateProgressBar
             // 
@@ -96,6 +97,12 @@
             this.updateProgressBar.Name = "updateProgressBar";
             this.updateProgressBar.Size = new System.Drawing.Size(1300, 23);
             this.updateProgressBar.TabIndex = 3;
+            // 
+            // pythonToolStripMenuItem
+            // 
+            this.pythonToolStripMenuItem.Name = "pythonToolStripMenuItem";
+            this.pythonToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.pythonToolStripMenuItem.Text = "&Python";
             // 
             // Form1
             // 
@@ -108,7 +115,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Neustars, Inc ©™ EPP Logger";
+            this.Text = "Neustars, Inc ©™ EPP Logger & Python Simulator";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -125,6 +132,7 @@
         private System.Windows.Forms.TextBox InputBox;
         private System.Windows.Forms.TextBox OutputText_Box;
         private System.Windows.Forms.ProgressBar updateProgressBar;
+        private System.Windows.Forms.ToolStripMenuItem pythonToolStripMenuItem;
     }
 }
 

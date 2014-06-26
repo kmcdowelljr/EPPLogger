@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+//Adding Python lib to program build
+using Python.Runtime;
+
 
 namespace EPP_Logger
 {
@@ -114,7 +117,8 @@ namespace EPP_Logger
         {
             InitializeComponent();
             // Display EPP Logger information
-            InputBox.Text = "Neustars, Inc © 2013-2014 EPP Logger";
+            InputBox.Text = "Neustars, Inc © 2013-2014 EPP Logger\n";
+            InputBox.Text = "Python Simulator Build version 1.00\n";
             // Hidden the progress bar
             updateProgressBar.Visible = false;   // Turn on when performing a process.
 
