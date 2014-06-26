@@ -14,6 +14,7 @@ using IronPython.Compiler;
 using IronPython.Hosting;
 using IronPython.Modules;
 using IronPython.Runtime;
+using Microsoft.Scripting;
 //
 
 
@@ -174,21 +175,14 @@ namespace EPP_Logger
 
         private void pythonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Launch the command prompt
-            // Start the child process.
-            System.Diagnostics.Process p = new System.Diagnostics.Process();
-            // Redirect the output stream of the child process.
-            p.StartInfo.UseShellExecute = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.FileName = @"C:\\Windows\\System32\\cmd.exe";
-            p.Start();
-            // Do not wait for the child process to exit before
-            // reading to the end of its redirected stream.
-            // p.WaitForExit();
-            // Read the output stream first and then wait.
-            string output = p.StandardOutput.ReadToEnd();
-            //p.WaitForExit();
-        }
+
+            var py = IronPython.Hosting.Python.CreateEngine();
+            try
+            {
+                py.ExecuteFile("");
+            }
+            catch (Exception ex) { }
+        } 
     }
 }
 
