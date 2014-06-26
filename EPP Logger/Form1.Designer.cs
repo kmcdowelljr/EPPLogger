@@ -32,10 +32,10 @@
             this.MainWindow_fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InputBox = new System.Windows.Forms.TextBox();
             this.OutputText_Box = new System.Windows.Forms.TextBox();
             this.updateProgressBar = new System.Windows.Forms.ProgressBar();
-            this.pythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,6 +73,13 @@
             this.exitToolStripMenuItem.Text = "&Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // pythonToolStripMenuItem
+            // 
+            this.pythonToolStripMenuItem.Name = "pythonToolStripMenuItem";
+            this.pythonToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.pythonToolStripMenuItem.Text = "&Python";
+            this.pythonToolStripMenuItem.Click += new System.EventHandler(this.pythonToolStripMenuItem_Click);
+            // 
             // InputBox
             // 
             this.InputBox.Location = new System.Drawing.Point(13, 39);
@@ -97,12 +104,6 @@
             this.updateProgressBar.Name = "updateProgressBar";
             this.updateProgressBar.Size = new System.Drawing.Size(1300, 23);
             this.updateProgressBar.TabIndex = 3;
-            // 
-            // pythonToolStripMenuItem
-            // 
-            this.pythonToolStripMenuItem.Name = "pythonToolStripMenuItem";
-            this.pythonToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.pythonToolStripMenuItem.Text = "&Python";
             // 
             // Form1
             // 

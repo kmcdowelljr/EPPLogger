@@ -10,6 +10,11 @@ using System.Windows.Forms;
 using System.IO;
 //Adding Python lib to program build
 using Python.Runtime;
+using IronPython.Compiler;
+using IronPython.Hosting;
+using IronPython.Modules;
+using IronPython.Runtime;
+//
 
 
 namespace EPP_Logger
@@ -122,10 +127,6 @@ namespace EPP_Logger
             // Hidden the progress bar
             updateProgressBar.Visible = false;   // Turn on when performing a process.
 
-
-
-
-
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -169,6 +170,24 @@ namespace EPP_Logger
 
             OutputText_Box.AppendText(fakedata.ToString());
          
+        }
+
+        private void pythonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Launch the command prompt
+            // Start the child process.
+            System.Diagnostics.Process p = new System.Diagnostics.Process();
+            // Redirect the output stream of the child process.
+            p.StartInfo.UseShellExecute = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.FileName = @"C:\\Windows\\System32\\cmd.exe";
+            p.Start();
+            // Do not wait for the child process to exit before
+            // reading to the end of its redirected stream.
+            // p.WaitForExit();
+            // Read the output stream first and then wait.
+            string output = p.StandardOutput.ReadToEnd();
+            //p.WaitForExit();
         }
     }
 }
