@@ -33,7 +33,7 @@ namespace EPP_Logger
             
             //Step 1:
             // Create a new script runtime
-            string script = "";
+            string script = "pytool-gimped.py";
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var source = engine.CreateScriptSourceFromString(script, SourceCodeKind.Statements);
@@ -44,7 +44,7 @@ namespace EPP_Logger
            
             try{
                 // Step 2: Load python file into memory
-                dynamic loadscript = engine.ExecuteFile("pytool-gimped.py");
+                dynamic loadscript = engine.ExecuteFile(script);
                 
                 
             }
