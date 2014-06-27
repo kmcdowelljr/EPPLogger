@@ -8,8 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-//Adding Python lib to program build
-using Python.Runtime;
+
 using IronPython.Compiler;
 using IronPython.Hosting;
 using IronPython.Modules;
@@ -175,13 +174,9 @@ namespace EPP_Logger
 
         private void pythonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            var py = IronPython.Hosting.Python.CreateEngine();
-            try
-            {
-                py.ExecuteFile("");
-            }
-            catch (Exception ex) { }
+            Python_Window window = new Python_Window();
+            window.Show();
+           
         } 
     }
 }
