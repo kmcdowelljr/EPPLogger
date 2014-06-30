@@ -14,6 +14,7 @@ using IronPython.Hosting;
 using IronPython.Modules;
 using IronPython.Runtime;
 using Microsoft.Scripting;
+using System.Reflection;
 //
 
 
@@ -120,7 +121,10 @@ namespace EPP_Logger
         #endregion
         public Form1()
         {
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
             InitializeComponent();
+            this.Text = string.Format("EPP Logger & Python Simulator (C) 2013-2014 - Version {0}.{1}.{2} Revision {3}", version.Major, version.Minor, version.Build, version.Revision);
+
             // Display EPP Logger information
             InputBox.Text = "Neustars, Inc © 2013-2014 EPP Logger\n";
             InputBox.Text = "Python Simulator Build version 1.00\n";
@@ -174,8 +178,10 @@ namespace EPP_Logger
 
         private void pythonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Python_Window window = new Python_Window();
-            window.Show();
+           
+                    Python_Window window = new Python_Window();
+                    window.Show();
+               
            
         } 
     }
