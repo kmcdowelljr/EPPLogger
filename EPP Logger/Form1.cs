@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
@@ -20,6 +21,7 @@ using System.Reflection;
 
 namespace EPP_Logger
 {
+
     public partial class Form1 : Form
     {
         #region FakeData
@@ -119,18 +121,89 @@ namespace EPP_Logger
         };
 
         #endregion
+       
         public Form1()
         {
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             InitializeComponent();
-            this.Text = string.Format("EPP Logger & Python Simulator (C) 2013-2014 - Version {0}.{1}.{2} Revision {3}", version.Major, version.Minor, version.Build, version.Revision);
+            InitializeBackgroundWorker();
+            string Version = this.Text = string.Format("EPP Logger & Python Simulator (C) 2013-2014");
 
             // Display EPP Logger information
-            InputBox.Text = "Neustars, Inc © 2013-2014 EPP Logger\n";
-            InputBox.Text = "Python Simulator Build version 1.00\n";
+            InputBox.Text = "Neustars, Inc © 2013-2014 EPP Logger\r\n";
+            _versionBuild.Text =  string.Format("Build & Version: {0}.{1}.{2} Revision {3}", version.Major, version.Minor, version.Build, version.Revision).ToString();
             // Hidden the progress bar
             updateProgressBar.Visible = false;   // Turn on when performing a process.
+            //back
+            backgroundWorker1.WorkerReportsProgress = true;
+            backgroundWorker1.WorkerSupportsCancellation = true;
+        }
 
+        // Set up the BackgroundWorker object by  
+        // attaching event handlers.  
+        private void InitializeBackgroundWorker()
+        {
+            backgroundWorker1.DoWork +=
+                new DoWorkEventHandler(backgroundWorker1_DoWork);
+            backgroundWorker1.RunWorkerCompleted +=
+                new RunWorkerCompletedEventHandler(
+            backgroundWorker1_RunWorkerCompleted);
+            backgroundWorker1.ProgressChanged +=
+                new ProgressChangedEventHandler(
+            backgroundWorker1_ProgressChanged);
+        }
+      
+        private void cancelAsyncButton_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorker1.WorkerSupportsCancellation == true)
+            {
+                // Cancel the asynchronous operation.
+                backgroundWorker1.CancelAsync();
+            }
+        }
+
+        // This event handler is where the time-consuming work is done. 
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            updateProgressBar.Visible = true;   // Turn on when performing a process.
+            for (int i = 1; i <= 10; i++)
+            {
+                if (worker.CancellationPending == true)
+                {
+                    e.Cancel = true;
+                    break;
+                }
+                else
+                {
+                    // Perform a time consuming operation and report progress.
+                    System.Threading.Thread.Sleep(500);
+                    worker.ReportProgress(i * 10);
+                }
+            }
+        }
+
+        // This event handler updates the progress. 
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            this.updateProgressBar.Value = e.ProgressPercentage;
+        }
+
+        // This event handler deals with the results of the background operation. 
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled == true)
+            {
+               // barUpdateLabel.Text = "Canceled!";
+            }
+            else if (e.Error != null)
+            {
+                //barUpdateLabel.Text = "Error: " + e.Error.Message;
+            }
+            else
+            {
+                //barUpdateLabel.Text = "Done!";
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -161,7 +234,7 @@ namespace EPP_Logger
                         // now display the stream of data to the InputOut window
                         InputBox.Text = reader.ReadToEnd();
                         // then write it out
-                        OutputFakeData();
+                        OutputFakeData(sender);
                     }
                 }
 
@@ -169,11 +242,26 @@ namespace EPP_Logger
             }
         }
 
-        private void OutputFakeData()
-        {
 
-            OutputText_Box.AppendText(fakedata.ToString());
-         
+        private void OutputFakeData(object sender)
+        {
+            this.updateProgressBar.Visible = true;   // Turn on when performing a process.
+            Thread pThread = new System.Threading.Thread(delegate()
+            {
+                int size = fakedata.Length;
+
+                for (int c = 0; c < size; c++)
+                {
+
+                    OutputText_Box.AppendText(fakedata[c] + "\r\n".ToString());
+                    OutputText_Box.AppendText("\r\n");
+                    Thread.Sleep(350);
+                    this.updateProgressBar.PerformStep();
+                    this.updateProgressBar.Update();
+                }
+            });
+            pThread.Start();
+          
         }
 
         private void pythonToolStripMenuItem_Click(object sender, EventArgs e)
@@ -183,7 +271,37 @@ namespace EPP_Logger
                     window.Show();
                
            
-        } 
+        }
+
+        private void updateProgressBar_Validating(object sender, CancelEventArgs e)
+        {
+            this.updateProgressBar.Value = 9;
+            this.updateProgressBar.Step = 1;
+            this.updateProgressBar.PerformStep();
+            this.updateProgressBar.Update();
+            this.updateProgressBar.Refresh();
+        }
+
+        private void updateProgressBar_VisibleChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                this.updateProgressBar.Value = 9;
+                this.updateProgressBar.Step = 1;
+                this.updateProgressBar.PerformStep();
+                this.updateProgressBar.Update();
+                this.updateProgressBar.Refresh();
+            }
+            catch (Exception ex) { OutputText_Box.Text = ex.Message.ToString(); }
+        }
+
+
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // The user click the X-Close button in the window form..Close the application
+            Application.Exit();
+        }
     }
 }
 
