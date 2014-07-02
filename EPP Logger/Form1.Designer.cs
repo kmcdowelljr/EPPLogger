@@ -36,6 +36,8 @@
             this.InputBox = new System.Windows.Forms.TextBox();
             this.OutputText_Box = new System.Windows.Forms.TextBox();
             this.updateProgressBar = new System.Windows.Forms.ProgressBar();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this._versionBuild = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,16 +102,32 @@
             // 
             // updateProgressBar
             // 
-            this.updateProgressBar.Location = new System.Drawing.Point(13, 509);
+            this.updateProgressBar.Location = new System.Drawing.Point(333, 509);
             this.updateProgressBar.Name = "updateProgressBar";
-            this.updateProgressBar.Size = new System.Drawing.Size(1300, 23);
+            this.updateProgressBar.Size = new System.Drawing.Size(753, 23);
             this.updateProgressBar.TabIndex = 3;
+            this.updateProgressBar.VisibleChanged += new System.EventHandler(this.updateProgressBar_VisibleChanged);
+            this.updateProgressBar.Validating += new System.ComponentModel.CancelEventHandler(this.updateProgressBar_Validating);
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            // 
+            // _versionBuild
+            // 
+            this._versionBuild.AutoSize = true;
+            this._versionBuild.Location = new System.Drawing.Point(510, 60);
+            this._versionBuild.Name = "_versionBuild";
+            this._versionBuild.Size = new System.Drawing.Size(74, 13);
+            this._versionBuild.TabIndex = 4;
+            this._versionBuild.Text = "Version & Build:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1325, 541);
+            this.Controls.Add(this._versionBuild);
             this.Controls.Add(this.updateProgressBar);
             this.Controls.Add(this.OutputText_Box);
             this.Controls.Add(this.InputBox);
@@ -117,6 +135,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Neustars, Inc ©™ EPP Logger & Python Simulator";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -134,6 +153,8 @@
         private System.Windows.Forms.TextBox OutputText_Box;
         private System.Windows.Forms.ProgressBar updateProgressBar;
         private System.Windows.Forms.ToolStripMenuItem pythonToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Label _versionBuild;
     }
 }
 
