@@ -111,7 +111,7 @@ namespace EPP_Logger
         {
             
             #region oldcode
-            /*
+            
             ScriptRuntimeSetup setup = Python.CreateRuntimeSetup(null);
             ScriptRuntime runtime = new ScriptRuntime(setup);
             ScriptEngine engine = Python.GetEngine(runtime);
@@ -123,47 +123,58 @@ namespace EPP_Logger
                       
             var py = Python.CreateEngine();
             dynamic scope = engine.CreateScope();
-
             py.Runtime.IO.RedirectToConsole();
-            py.Runtime.IO.SetOutput(new ScriptOutputStream(python_TextBox), Encoding.GetEncoding(1252));
+            engine.SetSearchPaths(new string[] {"C:\\Program Files (x86)\\IronPython 2.7\\Lib","C:\\Python27\\Lib\\"})
+;            py.Runtime.IO.SetOutput(new ScriptOutputStream(python_TextBox), Encoding.GetEncoding(1252));
             string Engine = py.LanguageVersion.ToString() + "\n";
             python_TextBox.Text = "Iron Python" + " " + Engine +"\r\n";
          
 
             try
-            {
-               // py.Execute(parseargs);
-                //py.Execute(@"C:\Users\kmcdowel\Documents\Visual Studio 2013\Projects\EPP Logger\EPP Logger\bin\Debug\mainprogram.py");
-                
-                 py.ExecuteFile(ApplicationPath +"\\pytool-gimped.py",scope);
-               
-               // python_TextBox.Text = file;
+            {  
+        
+                 py.ExecuteFile(ApplicationPath +"\\pytool-gimped.py",scope);    
             }
             catch (Exception ex) {
                     
-                python_TextBox.Text = ex.Message.ToString(); }
+                python_TextBox.AppendText(ex.Message.ToString()); }
 
-        */
+        
             #endregion
             // Revised code
     try
      {
         
-       System.Diagnostics.ProcessStartInfo procStartInfo = new ProcessStartInfo("cmd", "/c");
+       System.Diagnostics.ProcessStartInfo procStartInfo = new ProcessStartInfo("cmd.exe", "/c");
        // The following commands are needed to redirect the standard output.
        // This means that it will be redirected to the Process.StandardOutput StreamReader.
         
         procStartInfo.RedirectStandardOutput = false;
-        procStartInfo.UseShellExecute = false;
+        procStartInfo.UseShellExecute = true;
         // Do not create the black window.
-        procStartInfo.CreateNoWindow = false;
+        procStartInfo.CreateNoWindow = true;
+        procStartInfo.RedirectStandardInput = true;
+        procStartInfo.RedirectStandardOutput = true;
+        procStartInfo.RedirectStandardError = true;
         procStartInfo.WorkingDirectory = IronPython_Path;
         procStartInfo.FileName = IronPython_File;
+
+        Process process1 = new Process();
+        process1.OutputDataReceived += new DataReceivedEventHandler(OutputHandler);
+        process1.ErrorDataReceived += new DataReceivedEventHandler(ErrorHandler);
+
+      
         // Now we create a process, assign its ProcessStartInfo and start it
         try
         {
-            using (Process exeProcess = Process.Start(procStartInfo))
-                exeProcess.WaitForExit();
+            process1.StartInfo = procStartInfo;
+            process1.SynchronizingObject = python_TextBox;
+
+            process1.Start();
+            
+            process1.BeginOutputReadLine();
+
+            process1.WaitForExit();
         }
         catch
         {
@@ -187,7 +198,23 @@ namespace EPP_Logger
       }
         #endregion
         }
-        
+        private void OutputHandler(Object source, DataReceivedEventArgs outLine)
+        {
+            // Collect the sort command output. 
+            if (!String.IsNullOrEmpty(outLine.Data))
+            {
+                python_TextBox.AppendText(outLine.Data + "\r\n");
+            }
+        }
+
+        private void ErrorHandler(Object source, DataReceivedEventArgs outLine)
+        {
+            // Collect the sort command output. 
+            if (!String.IsNullOrEmpty(outLine.Data))
+            {
+                python_TextBox.AppendText(outLine.Data + "\r\n");
+            }
+        }  
      }
     }
 

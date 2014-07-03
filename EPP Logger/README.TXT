@@ -13,4 +13,6 @@
 [*] Build Version 1.0.8 Revision 20182  -7/02/2014
     * UI Changes
 
+--- Build Version 2.x.x.
+Version 2.0.1 R 20528  --- Python Simulator ehancements
 
