@@ -16,3 +16,9 @@
 --- Build Version 2.x.x.
 Version 2.0.1 R 20528  --- Python Simulator ehancements
 
+Build Version 2.0.1 R 26406 07/07/14
+ --Application is able to act as shell to execute the python script called pytool-gimped.py
+ --However, from the application users are unable to interact with the simulator program as this time.
+
+
+

@@ -11,7 +11,9 @@ using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting.Debugging;
 using IronPython;
+using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime;
 using IronPython.Hosting;
@@ -28,7 +30,7 @@ namespace EPP_Logger
     public partial class Python_Window : Form
     {
         string ApplicationPath = System.Environment.CurrentDirectory.ToString();
-        string IronPython_Path = @"C:\Program Files (x86)\IronPython 2.7\";
+        string IronPython_Path = @"C:\\Program Files (x86)\\IronPython 2.7\\";
         string IronPython_File = "ipy.exe";
         TextWriter _writer = null;
 
@@ -37,7 +39,7 @@ namespace EPP_Logger
             InitializeComponent();
         }
                
-
+    
         private class ScriptOutputStream : Stream
         {
             #region Fields
@@ -111,7 +113,7 @@ namespace EPP_Logger
         {
             
             #region oldcode
-            
+          
             ScriptRuntimeSetup setup = Python.CreateRuntimeSetup(null);
             ScriptRuntime runtime = new ScriptRuntime(setup);
             ScriptEngine engine = Python.GetEngine(runtime);
@@ -122,27 +124,35 @@ namespace EPP_Logger
             python_TextBox.Text = @ApplicationPath + "\r\n";
                       
             var py = Python.CreateEngine();
-            dynamic scope = engine.CreateScope();
+            ScriptScope scope = engine.CreateScope();
             py.Runtime.IO.RedirectToConsole();
-            engine.SetSearchPaths(new string[] {"C:\\Program Files (x86)\\IronPython 2.7\\Lib","C:\\Python27\\Lib\\"})
-;            py.Runtime.IO.SetOutput(new ScriptOutputStream(python_TextBox), Encoding.GetEncoding(1252));
+            engine.SetSearchPaths(new string[] { "C:\\Program Files (x86)\\IronPython 2.7\\Lib", "C:\\Python27\\Lib\\" });
+            py.Runtime.IO.SetOutput(new ScriptOutputStream(python_TextBox), Encoding.GetEncoding(1252));
             string Engine = py.LanguageVersion.ToString() + "\n";
             python_TextBox.Text = "Iron Python" + " " + Engine +"\r\n";
-         
-
+            
+             string _tld ="";
+                        
             try
-            {  
-        
-                 py.ExecuteFile(ApplicationPath +"\\pytool-gimped.py",scope);    
+            {
+               
+
+               py.ExecuteFile(ApplicationPath + "\\pytool-gimped.py", scope);
+                     
+                   
             }
-            catch (Exception ex) {
-                    
-                python_TextBox.AppendText(ex.Message.ToString()); }
+            catch (Exception ex)
+            {
+
+               // MessageBox.Show(ex.ToString());
+                
+            }
 
         
             #endregion
             // Revised code
-    try
+            # region Command Prompt
+            try
      {
         
        System.Diagnostics.ProcessStartInfo procStartInfo = new ProcessStartInfo("cmd.exe", "/c");
@@ -179,6 +189,8 @@ namespace EPP_Logger
         catch
         {
         }
+
+            #endregion
 
         #region oldcode2
         System.Diagnostics.Process proc = new System.Diagnostics.Process();
